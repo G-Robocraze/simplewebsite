@@ -110,7 +110,7 @@ def send_data():
     current3 = random.randint(1, 10)
     energy3 = voltage3 * current3 """
     global voltage1, current1, energy1, voltage2, current2, energy2, voltage3, current3, energy3
-    
+
     conn = mysql.connector.connect(
         host=db_host,
         user=db_user,
@@ -151,5 +151,5 @@ def handle_connect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
 
