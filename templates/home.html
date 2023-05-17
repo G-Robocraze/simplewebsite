@@ -232,9 +232,9 @@
                 <div class="card-body">
                   <h5 class="card-title">Load 1</h5>
                   <canvas id="chart1" height="100"></canvas>
-                  <p class="card-text">Voltage: <span id="load1Voltage"></span></p>
-                  <p class="card-text">Current: <span id="load1Current"></span></p>
-                  <p class="card-text">Energy: <span id="load1Energy"></span></p>
+                  <p class="card-text">Voltage: <span id="load1Voltage"></span> V</p>
+                  <p class="card-text">Current: <span id="load1Current"></span> A</p>
+                  <p class="card-text">Energy: <span id="load1Energy"></span> W</p>
                 </div>
               </div>
             </div>
@@ -243,9 +243,9 @@
                 <div class="card-body">
                   <h5 class="card-title">Load 2</h5>
                   <canvas id="load2Chart" height="100"></canvas>
-                  <p class="card-text">Voltage: <span id="load2Voltage"></span></p>
-                  <p class="card-text">Current: <span id="load2Current"></span></p>
-                  <p class="card-text">Energy: <span id="load2Energy"></span></p>
+                  <p class="card-text">Voltage: <span id="load2Voltage"></span> V</p>
+                  <p class="card-text">Current: <span id="load2Current"></span> A</p>
+                  <p class="card-text">Energy: <span id="load2Energy"></span> W</p>
                 </div>
               </div>
             </div>
@@ -254,9 +254,9 @@
                 <div class="card-body">
                   <h5 class="card-title">Load 3</h5>
                   <canvas id="load3Chart" height="100"></canvas>
-                  <p class="card-text">Voltage: <span id="load3Voltage"></span></p>
-                  <p class="card-text">Current: <span id="load3Current"></span></p>
-                  <p class="card-text">Energy: <span id="load3Energy"></span></p>
+                  <p class="card-text">Voltage: <span id="load3Voltage"></span> V</p>
+                  <p class="card-text">Current: <span id="load3Current"></span> A</p>
+                  <p class="card-text">Energy: <span id="load3Energy"></span> W</p>
                 </div>
               </div>
             </div>
@@ -270,17 +270,17 @@
             <h3 class="poppins-text_med">Manual Controls</h3>
             <div class="row switch">
               <div class="col-md-4">
-                <button class="round-button off-button">OFF</button>
+                <button id="load1" class="round-button off-button">OFF</button>
                 <h5 class="font-load">Load 1</h5>
                 <!-- <button class="round-button off-button">OFF</button> -->
               </div>
               <div class="col-md-4">
-                <button class="round-button off-button">OFF</button>
+                <button id="load2" class="round-button off-button">OFF</button>
                 <h5 class="font-load">Load 2</h5>
                 <!-- <button class="round-button off-button">OFF</button> -->
               </div>
               <div class="col-md-4">
-                <button class="round-button off-button" onclick="sendStatus()">OFF</button>
+                <button id="load3" class="round-button off-button" onclick="sendStatus()">OFF</button>
                 <h5 class="font-load">Load 3</h5>
                 <!-- <button class="round-button off-button">OFF</button> -->
               </div>
@@ -291,15 +291,15 @@
           <div class="row">
             <div class="col-md-3">
               <div class="button-container">
-                <button class="button save">Save</button>
+                <button id="saveButton" class="button save">Save</button>
                 <button class="button reset">Reset</button>
               </div>
             </div>
               <div class="col-md-6">
                 <ul class="list-group" id="sortableList">
-                  <li class="list-group-item list-font">Item 1</li>
-                  <li class="list-group-item list-font">Item 2</li>
-                  <li class="list-group-item list-font">Item 3</li>
+                  <li class="list-group-item list-font">load1</li>
+                  <li class="list-group-item list-font">load2</li>
+                  <li class="list-group-item list-font">load3</li>
                   <!-- <li class="list-group-item">Item 4</li>
                   <li class="list-group-item">Item 5</li> -->
                 </ul>
@@ -312,38 +312,38 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
       // Code for the sortable list
-      $( function() {
+      /* $( function() {
         $( "#sortableList" ).sortable();
         $( "#sortableList" ).disableSelection();
-      } );
-      
-      // Code for updating the meter values
-      function updateMeterValues() {
-        var meter1Value = Math.floor(Math.random() * 100);
-        var meter2Value = Math.floor(Math.random() * 100);
-        $('#meter1Value').text(meter1Value + " units");
-        $('#meter2Value').text(meter2Value + " units");
+      } ); */
+    </script>
+    <script>
+      function updateValues(data) {
+        // Update the voltage value
+        document.getElementById('load1Voltage').textContent = data.voltage1;
+
+        // Update the current value
+        document.getElementById('load1Current').textContent = data.current1;
+
+        // Update the energy value
+        document.getElementById('load1Energy').textContent = data.energy1;
+        // Update the voltage value
+        document.getElementById('load2Voltage').textContent = data.voltage2;
+
+        // Update the current value
+        document.getElementById('load2Current').textContent = data.current2;
+
+        // Update the energy value
+        document.getElementById('load2Energy').textContent = data.energy2;
+        // Update the voltage value
+        document.getElementById('load3Voltage').textContent = data.voltage3;
+
+        // Update the current value
+        document.getElementById('load3Current').textContent = data.current3;
+
+        // Update the energy value
+        document.getElementById('load3Energy').textContent = data.energy3;
       }
-      
-      // Code for updating the button colors and labels on click
-      $(document).ready(function() {
-        $('.round-button').click(function() {
-          if ($(this).hasClass('on-button')) {
-            $(this).removeClass('on-button');
-            $(this).addClass('off-button');
-            $(this).text('OFF');
-          } else {
-            $(this).removeClass('off-button');
-            $(this).addClass('on-button');
-            $(this).text('ON');
-          }
-        });
-      });
-      
-      // Code for calling the updateMeterValues function every 2 seconds
-      setInterval(function() {
-        updateMeterValues();
-      }, 2000);
     </script>
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <script>
@@ -465,7 +465,8 @@
       });
 
       var socket = io.connect('http://127.0.0.1:5000');
-
+          
+      //function to receive data
       socket.on('data', function(data) {
         var time = new Date().toLocaleTimeString();
         if (chart1.data.labels.length >= 10) {
@@ -503,9 +504,47 @@
         load3Chart.data.datasets[1].data.push(data.current3);
         load3Chart.data.datasets[2].data.push(data.energy3);
         load3Chart.update();
+        updateValues(data);
       });
 
+      //Function for button status sending
+      function sendStatus(buttonId, state) {
+        socket.emit('send_status', { button_id: buttonId, status: state});
+      }
+      $('.round-button').click(function() {
+        var state=null;
+        if ($(this).hasClass('on-button')) {
+          $(this).removeClass('on-button');
+          $(this).addClass('off-button');
+          $(this).text('OFF');
+          state='OFF';
+        } else {
+          $(this).removeClass('off-button');
+          $(this).addClass('on-button');
+          $(this).text('ON');
+          state='ON';
+        }
+        var buttonId = $(this).attr('id');
+        sendStatus(buttonId, state);
+      });
       
+
+      $(function() {
+        $("#sortableList").sortable();
+        $("#sortableList").disableSelection();
+
+        $('.save').click(function() {
+          var items = $("#sortableList li").map(function() {
+            return $(this).text().trim();
+          }).get();
+
+          var jsonData = JSON.stringify(items);
+          console.log(jsonData);
+          // Emit the jsonData to the server via SocketIO
+          socket.emit('list_order', jsonData);
+        });
+      });
+
     </script>
   </body>
 </html>

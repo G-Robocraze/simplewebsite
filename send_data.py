@@ -36,7 +36,7 @@ def send_data():
         else:
             print('Failed to send data')
 
-        time.sleep(2)  # Delay for 2 seconds before sending the next data
+        time.sleep(5)  # Delay for 2 seconds before sending the next data
 
 if __name__ == '__main__':
     send_data()

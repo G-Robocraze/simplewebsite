@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_socketio import SocketIO, emit
 import mysql.connector
-import random
+import random, json
 from threading import Thread
 import time
 from flask import current_app
@@ -15,15 +15,8 @@ db_user = 'root'
 db_password = 'Gsw@1924'
 db_name = 'esamproject'
 
-voltage1 = None
-current1 = None
-energy1 = None
-voltage2 = None
-current2 = None
-energy2 = None
-voltage3 = None
-current3 = None
-energy3 = None
+data = {'voltage1': 220, 'current1': 3, 'energy1': 660, 'voltage2': 230, 'current2': 7, 'energy2': 1610, 'voltage3': 225, 'current3': 2, 'energy3': 450}
+state={'button_id':'load1', 'status':'OFF'}
 # Function to validate user credentials
 def validate_user(username, password):
     # Create a database connection
@@ -81,10 +74,15 @@ def home():
 
 @app.route('/receive_data', methods=['POST'])
 def receive_data():
-    global voltage1, current1, energy1, voltage2, current2, energy2, voltage3, current3, energy3
+    global data
     data = request.get_json()
     print(data)  # Do something with the received data
     # Extract individual values
+    return 'Data received successfully'
+
+def send_data():
+    # Send random voltage, current, and energy values
+    global data
     voltage1 = data['voltage1']
     current1 = data['current1']
     energy1 = data['energy1']
@@ -94,23 +92,6 @@ def receive_data():
     voltage3 = data['voltage3']
     current3 = data['current3']
     energy3 = data['energy3']
-    return 'Data received successfully'
-
-def send_data():
-
-    
-    # Send random voltage, current, and energy values
-    """ voltage1 = random.randint(220, 240)
-    current1 = random.randint(1, 10)
-    energy1 = voltage1 * current1
-    voltage2 = random.randint(220, 240)
-    current2 = random.randint(1, 10)
-    energy2 = voltage2 * current2
-    voltage3 = random.randint(220, 240)
-    current3 = random.randint(1, 10)
-    energy3 = voltage3 * current3 """
-    global voltage1, current1, energy1, voltage2, current2, energy2, voltage3, current3, energy3
-
     conn = mysql.connector.connect(
         host=db_host,
         user=db_user,
@@ -131,23 +112,72 @@ def send_data():
     cursor.close()
     conn.close()
 
-    data = {'voltage1': voltage1, 'current1': current1, 'energy1': energy1, 'voltage2': voltage2, 'current2': current2, 'energy2': energy2, 'voltage3': voltage3, 'current3': current3, 'energy3': energy3}
+    #data = {'voltage1': voltage1, 'current1': current1, 'energy1': energy1, 'voltage2': voltage2, 'current2': current2, 'energy2': energy2, 'voltage3': voltage3, 'current3': current3, 'energy3': energy3}
     with app.app_context():
         try:
             socketio.emit('data', data)
         except RuntimeError:
             current_app.logger.error('Unable to emit data to SocketIO clients.')
-        time.sleep(2)
+        time.sleep(5)
     # Schedule the next data send in 1 second
     socketio.start_background_task(send_data)
 
 @socketio.on('connect')
 def handle_connect():
     print('Client connected')
-    t = Thread(target=send_data)
-    t.daemon = True
-    t.start()
+    t1 = Thread(target=send_data)
+    t1.daemon = True
+    t1.start()
 
+@socketio.on('send_status')
+def handle_send_status(state):
+    button_id = state['button_id']
+    status=state['status']
+    # Process the received status
+    # For example:
+    if button_id == 'load1':
+        # Do something for Load 1 with the received status
+        pass
+    elif button_id == 'load2':
+        # Do something for Load 2 with the received status
+        pass
+    elif button_id == 'load3':
+        # Do something for Load 3 with the received status
+        pass
+    conn = mysql.connector.connect(
+        host=db_host,
+        user=db_user,
+        password=db_password,
+        database=db_name
+    )
+    cursor = conn.cursor()
+    query = "UPDATE loads SET state = %s WHERE Load_id = %s"
+    cursor.execute(query, (status, button_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    print(state)
+
+@socketio.on('list_order')
+def handle_list_order(jsonData):
+    data_list = json.loads(jsonData)
+    conn = mysql.connector.connect(
+        host=db_host,
+        user=db_user,
+        password=db_password,
+        database=db_name
+    )
+    cursor = conn.cursor()
+    query = "UPDATE priority SET Load_id = %s WHERE id = %s"
+    # Iterate over the data_list and update each row in the table
+    for i, item in enumerate(data_list, start=1):
+        cursor.execute(query, (item, i))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    # Process the received list order data
+    # For example, you can print it or perform any other desired action
+    print(data_list)
 
 
 if __name__ == '__main__':
